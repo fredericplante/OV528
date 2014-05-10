@@ -1,36 +1,36 @@
 import processing.serial.*;
 
-Serial myPort;
+Serial mon_port;
 
-String filename = "photo.jpg";
+String nom_du_fichier = "photo.jpg";
 byte[] photo = {};
-Boolean readData = false;
-PImage captureImage;
+Boolean en_reception = false;
+PImage image_recue;
 long millis_actuelle;
-long octet_entrant;
+long longueur_totale;
 
 void setup(){
   
   size(640,480);
-  String portName = Serial.list()[0];
-  myPort = new Serial( this, portName, 115200 );
+  String nom_du_port = Serial.list()[0];
+  mon_port = new Serial( this, nom_du_port, 115200 );
   
 }
 void draw(){
   
-  byte[] buffer = new byte[128];
+  byte[] tampon_entrant = new byte[128];
   
-  if( readData ){
+  if( en_reception ){
   
-    while( myPort.available() > 0 ){
+    while( mon_port.available() > 0 ){
       millis_actuelle = millis(); 
-      int readBytes = myPort.readBytes( buffer );
-      octet_entrant += readBytes;
-      frame.setTitle("Lecture " + octet_entrant + " octets ..."  );
+      int longueur_partielle = mon_port.readBytes( tampon_entrant );
+      longueur_totale += longueur_partielle;
+      frame.setTitle("En réception: " + longueur_totale + " octets entrés..."  );
       
-      for( int i = 0; i < readBytes; i++ ){
+      for( int i = 0; i < longueur_partielle; i++ ){
         
-        photo = append( photo, buffer[i] );
+        photo = append( photo, tampon_entrant[i] );
       
       }
 
@@ -38,15 +38,15 @@ void draw(){
    
    if ((millis() - millis_actuelle) > 2000){
    
-     readData = false;
-     octet_entrant = 0;
+     en_reception = false;
+     longueur_totale = 0;
      keyPressed();
      
    }
 
   }
 
-  else{while( myPort.available() > 0 ){println( myPort.readString() );}}
+  else{while( mon_port.available() > 0 ){println( mon_port.readString() );}}
   
 }
 
@@ -54,22 +54,22 @@ void keyPressed(){
 
   if( photo.length > 0 ) {
   
-    readData = false;
-    frame.setTitle("Ecriture vers le disque " + photo.length +" octets ..." );
-    saveBytes( filename, photo );
-    frame.setTitle("Termine!");
+    en_reception = false;
+    frame.setTitle("Écriture vers le disque " + photo.length +" octets..." );
+    saveBytes( nom_du_fichier, photo );
+    frame.setTitle("Terminé!");
     photo = new byte[0];
     millis_actuelle = millis();
-    captureImage = loadImage(filename);
-    image(captureImage, 0, 0);
+    image_recue = loadImage(nom_du_fichier);
+    image(image_recue, 0, 0);
   
   }
   
   else {
   
-    readData = true;
-    myPort.write(0);
-    frame.setTitle("En attente de donnees, Veuillez appuyer sur le bouton de prise de photo."  );
+    en_reception = true;
+    mon_port.write(0);
+    frame.setTitle("En attente de données, veuillez appuyer sur le bouton de l'appareil photo."  );
   
   }
   
