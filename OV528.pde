@@ -1,10 +1,13 @@
 import processing.serial.*;
 
 Serial myPort;
+
 String filename = "photo.jpg";
 byte[] photo = {};
 Boolean readData = false;
 PImage captureImage;
+long millis_actuelle;
+long octet_entrant;
 
 void setup(){
   
@@ -20,11 +23,10 @@ void draw(){
   if( readData ){
   
     while( myPort.available() > 0 ){
-      
+      millis_actuelle = millis(); 
       int readBytes = myPort.readBytes( buffer );
-      print( "Lecture " );
-      print( readBytes );
-      println( " octets ..." );
+      octet_entrant += readBytes;
+      frame.setTitle("Lecture " + octet_entrant + " octets ..."  );
       
       for( int i = 0; i < readBytes; i++ ){
         
@@ -33,6 +35,14 @@ void draw(){
       }
 
     }
+   
+   if ((millis() - millis_actuelle) > 2000){
+   
+     readData = false;
+     octet_entrant = 0;
+     keyPressed();
+     
+   }
 
   }
 
@@ -45,13 +55,11 @@ void keyPressed(){
   if( photo.length > 0 ) {
   
     readData = false;
-    print( "Ecriture vers le disque " );
-    print( photo.length );
-    println( " octets ..." );
+    frame.setTitle("Ecriture vers le disque " + photo.length +" octets ..." );
     saveBytes( filename, photo );
-    println( "Termine!" );
+    frame.setTitle("Termine!");
     photo = new byte[0];
-
+    millis_actuelle = millis();
     captureImage = loadImage(filename);
     image(captureImage, 0, 0);
   
@@ -61,8 +69,8 @@ void keyPressed(){
   
     readData = true;
     myPort.write(0);
-    println( "En attente de donnees ..." );
+    frame.setTitle("En attente de donnees, Veuillez appuyer sur le bouton de prise de photo."  );
   
   }
-
+  
 }
