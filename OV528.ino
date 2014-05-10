@@ -9,7 +9,7 @@
 #define PIC_FMT        PIC_FMT_VGA
 
 const byte cameraAddr = (CAM_ADDR << 5);  
-const int broche_bouton = A5;                 
+const int broche_bouton = 5;                 
 unsigned long picTotalLen = 0;            
 int picNameNum = 0;
 
