@@ -29,8 +29,8 @@ void loop(){
 
   while(1){
   
-    Serial.println("Code vient en grande partie de moi, et de plusieurs copier coller d'un peu partout ici et la. Je tiens a donner un remerciement special a Seeed-Studion\n");
-    Serial.println("\r\nAppuyez sur une touche du clavier pour activer la reception sur Processing ensuite sur le bouton pour activer l'envoie de la photo.\r\n");
+    Serial.print(F("Code vient en grande partie de moi, et de quelques copier+coller trouvés ici et la. Je tiens a donner un remerciement special a Seeed-Studion\n"));
+    Serial.print(F("Appuyez sur une touche du clavier pour activer la reception sur Processing ensuite sur le bouton pour activer l'envoie de la photo.\n"));
 
     while (digitalRead(broche_bouton) == HIGH);
   
